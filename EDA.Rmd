@@ -1,0 +1,313 @@
+# AOL LAB Data Mining and Visualization
+
+#### Shafa Amira Qonitatin - 2502009173
+
+## About Dataset
+
+-   gender - Whether the customer is a male or a female
+-   SeniorCitizen - Whether the customer is a senior citizen or not (1, 0)
+-   Partner - Whether the customer has a partner or not (Yes, No)
+-   Dependents - Whether the customer has dependents or not (Yes, No)
+-   Tenure - Number of months the customer has stayed with the company check
+-   PhoneService - Whether the customer has a phone service or not (Yes, No)
+-   MultipleLines - Whether the customer has multiple lines or not (Yes, No, No phone service)
+-   InternetService - Customer's internet service provider (DSL, Fiber optic, No)
+-   OnlineSecurity - Whether the customer has online security or not (Yes, No, No internet service)
+-   OnlineBackup - Whether the customer has online backup or not (Yes, No, No internet service)
+-   DeviceProtection - Whether the customer has device protection or not (Yes, No, No internet service)
+-   TechSupport - Whether the customer has tech support or not (Yes, No, No internet service)
+-   StreamingTV - Whether the customer has streaming TV or not (Yes, No, No internet service)
+-   StreamingMovies - Whether the customer has streaming movies or not (Yes, No, No internet service)
+-   Contract - The contract term of the customer (Month-to-month, One year, Two year)
+-   PaperlessBilling - Whether the customer has paperless billing or not (Yes, No)
+-   PaymentMethod - The customer's payment method (Electronic check, Mailed check, Bank transfer (automatic), Credit card (automatic))
+-   MonthlyCharges - The amount charged to the customer monthly
+-   TotalCharges - The total amount charged to the customer
+-   Churn - Whether the customer churned or not (Yes or No)
+
+Dataset is from this following link: <https://www.kaggle.com/datasets/blastchar/telco-customer-churn>
+
+# Exploratory Data Analysis (EDA)
+
+## 1) Understanding Variables
+
+```{r}
+# load dataset
+library(readr)
+df = read_csv("/Users/shafaqonitatingmail.com/Documents/Semester 4/Data Mining and Visualization/Assignment/LAB/Telco Customer Churn/WA_Fn-UseC_-Telco-Customer-Churn.csv", show_col_types = FALSE)
+```
+
+```{r}
+# observation the first 6 column
+head(df)
+```
+
+```{r}
+# view the structure of the dataset
+str(df)
+```
+
+```{r}
+# view summary statistics
+summary(df)
+```
+
+```{r}
+# misformatted data
+print(unique(df$gender))
+print(unique(df$Partner))
+print(unique(df$Dependents))
+print(unique(df$PhoneService))
+print(unique(df$MultipleLines))
+print(unique(df$InternetService))
+print(unique(df$OnlineSecurity))
+print(unique(df$OnlineBackup))
+print(unique(df$DeviceProtection))
+print(unique(df$TechSupport))
+print(unique(df$StreamingTV))
+print(unique(df$StreamingMovies))
+print(unique(df$Contract))
+print(unique(df$PaperlessBilling))
+print(unique(df$PaymentMethod))
+print(unique(df$Churn))
+```
+
+## 2) Cleaning dataset
+
+```{r}
+# delete customerID
+df = subset(df,select = -c(customerID))
+```
+
+```{r}
+head(df)
+```
+
+```{r}
+df$SeniorCitizen <- ifelse(df$SeniorCitizen == 1, "Yes", "No")
+```
+
+```{r}
+head(df)
+```
+
+```{r}
+# omit null values
+df <- na.omit(df)
+```
+
+```{r}
+summary(df)
+```
+
+```{r}
+library(ggplot2)
+
+# outliers
+b1 = ggplot(data = df, aes(x = "", y = tenure)) +
+  geom_boxplot(fill = "lightblue", color = "#142850") +
+  labs(x = "", y = "Tenure", title = "Boxplot of Tenure")
+
+b2 = ggplot(data = df, aes(x = "", y = MonthlyCharges)) +
+  geom_boxplot(fill = "lightblue", color = "#142850") +
+  labs(x = "", y = "MonthlyCharges", title = "Boxplot of Monthly Charges")
+
+b3 = ggplot(data = df, aes(x = "", y = TotalCharges)) +
+  geom_boxplot(fill = "lightblue", color = "#142850") +
+  labs(x = "", y = "TotalCharges", title = "Boxplot of Total Charges")
+
+b1
+b2
+b3
+```
+
+## 3) Visualization
+
+```{r}
+# Histogram Plot Distribution of tenure
+h1 =ggplot(data = df, aes(x = tenure)) +
+  geom_histogram(fill = "lightblue", color = "#142850", bins = 30) +
+  labs(x = "Tenure", y = "Count of Tenure", title = "Histogram Plot Distribution of Tenure")
+
+# Histogram Plot Distribution of MonthlyCharges
+h2 = ggplot(data = df, aes(x = MonthlyCharges)) +
+  geom_histogram(fill = "lightblue", color = "#142850", bins = 30) +
+  labs(x = "MonthlyCharges", y = "Count of MonthlyCharges", title = "Histogram Plot Distribution of MonthlyCharges")
+
+# Histogram Plot Distribution of TotalCharges
+h3 = ggplot(data = df, aes(x = TotalCharges)) +
+  geom_histogram(fill = "lightblue", color = "#142850", bins = 30) +
+  labs(x = "TotalCharges", y = "Count of TotalCharges", title = "Histogram Plot Distribution of TotalCharges")
+
+h1
+h2
+h3
+```
+
+```{r}
+ggplot(data = df, aes(x = Churn)) +
+  geom_bar(fill = c("#142850", "lightblue")) +
+  labs(x = "Churn", y = "Count", title = "Bar Plot Distribution of Churn")
+```
+
+```{r}
+# Contract Distribution Bar Plot with Churn Grouped
+g1 <- ggplot(data = df, aes(x = Contract)) +
+  geom_bar(aes(fill = Churn), position = "dodge") +
+  labs(x = "Contract", y = "Count", title = "Contract Distribution Bar Plot with Churn Grouped") +
+  scale_fill_manual(values = c("#142850", "lightblue"))
+
+# Internet Service Bar Plot with Churn Grouped
+g2 <- ggplot(data = df, aes(x = InternetService)) +
+  geom_bar(aes(fill = Churn), position = "dodge") +
+  labs(x = "Internet Service", y = "Count", title = "Internet Service Bar Plot with Churn Grouped") +
+  scale_fill_manual(values = c("#142850", "lightblue"))
+
+# Senior Citizen Bar Plot with Churn Grouped
+g3 <- ggplot(data = df, aes(x = SeniorCitizen)) +
+  geom_bar(aes(fill = Churn), position = "dodge") +
+  labs(x = "Senior Citizen", y = "Count", title = "Senior Citizen Distribution Bar Plot with Churn Grouped") +
+  scale_fill_manual(values = c("#142850", "lightblue"))
+
+# Gender Bar Plot with Churn Grouped
+g4 <- ggplot(data = df, aes(x = gender)) +
+  geom_bar(aes(fill = Churn), position = "dodge") +
+  labs(x = "Gender", y = "Count", title = "Gender Distribution Bar Plot with Churn Grouped") +
+  scale_fill_manual(values = c("#142850", "lightblue"))
+
+g1
+g2
+g3
+g4
+```
+
+## 4) Correlation
+
+```{r}
+df_num <- df[, sapply(df, is.numeric)]
+print(cor((df_num)))
+```
+
+```{r}
+library(reshape2)
+corr_melted <- melt(cor(df_num))
+corr_melted_sorted <- corr_melted %>% arrange(desc(value))
+head(corr_melted_sorted, 10)
+```
+
+```{r}
+library(ggplot2)
+ggplot(corr_melted, aes(x = Var1, y = Var2, fill = value)) +
+geom_tile() +
+scale_fill_gradient2(low = "#DEFCF9", mid = "#3282B8", high = "#142850",
+name = "Pearson\nCorrelation") + theme(axis.text.x = element_text(angle = 90, vjust = 0.7, hjust = 1))
+```
+
+# Predictive Modelling
+
+```{r}
+library(caret)
+
+# Convert Churn variable to factor
+df$Churn <- as.factor(df$Churn)
+
+# Perform oversampling
+dfb <- upSample(x = df[, -which(names(df) == "Churn")],
+                        y = df$Churn,
+                        yname = "Churn")
+
+# Check the balanced class distribution
+table(dfb$Churn)
+
+```
+
+```{r}
+# Before oversampling
+b1 = ggplot(data = df, aes(x = Churn)) +
+  geom_bar(fill = c("#142850", "lightblue")) +
+  labs(x = "Churn", y = "Count", title = "Before Oversampling")
+
+# Create a bar plot for the distribution of Churn in balanced_df
+b2 = ggplot(data = dfb, aes(x = Churn)) +
+  geom_bar(fill = c("#142850", "lightblue")) +
+  labs(x = "Churn", y = "Count", title = "After Oversampling")
+
+library(gridExtra)
+grid.arrange(b1, b2, ncol=2)
+```
+
+```{r}
+# factor
+dfb$gender <- factor(dfb$gender)
+dfb$SeniorCitizen <- factor(dfb$SeniorCitizen)
+dfb$Partner <- factor(dfb$Partner)
+dfb$Dependents <- factor(dfb$Dependents)
+dfb$PhoneService <- factor(dfb$PhoneService)
+dfb$MultipleLines <- factor(dfb$MultipleLines)
+dfb$InternetService <- factor(dfb$InternetService)
+dfb$OnlineSecurity <- factor(dfb$OnlineSecurity)
+dfb$OnlineBackup <- factor(dfb$OnlineBackup)
+dfb$DeviceProtection <- factor(dfb$DeviceProtection)
+dfb$TechSupport <- factor(dfb$TechSupport)
+dfb$StreamingTV <- factor(dfb$StreamingTV)
+dfb$StreamingMovies <- factor(dfb$StreamingMovies)
+dfb$Contract <- factor(dfb$Contract)
+dfb$PaperlessBilling <- factor(dfb$PaperlessBilling)
+dfb$PaymentMethod <- factor(dfb$PaymentMethod)
+dfb$Churn <- factor(dfb$Churn)
+```
+
+```{r}
+head(dfb)
+```
+
+```{r}
+# split the data into training and testing sets
+library(caTools)
+set.seed(1)
+split <- sample.split(dfb$Churn, SplitRatio = 0.8)
+train <- subset(dfb, split == TRUE)
+test <- subset(dfb, split == FALSE)
+```
+
+```{r}
+n <- names(train)
+excluded_vars <- c("Churn")
+f <- as.formula(paste("Churn ~", paste(n[!n %in% excluded_vars], collapse = " + ")))
+```
+
+```{r}
+library(randomForest)
+modelRF <- randomForest(f,data=train)
+print(modelRF)
+```
+
+```{r}
+#create a data frame to compare the predicted value with the ground truth
+predictedRF <- predict(modelRF,test)
+```
+
+```{r}
+evaluation = confusionMatrix(predictedRF, test$Churn)
+evaluation
+```
+
+```{r}
+importance(modelRF)
+```
+
+```{r}
+varImpPlot(modelRF)
+```
+
+```{r}
+importance_df <- as.data.frame(importance(modelRF))
+importance_df$Variables <- rownames(importance_df)
+
+ggplot(importance_df, aes(x = Variables, y = MeanDecreaseGini)) +
+  geom_bar(stat = "identity", fill = "lightblue") +
+  coord_flip() +
+  labs(title = "Feature Importance",
+       x = "Variables",
+       y = "MeanDecreaseGini")
+```
